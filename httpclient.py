@@ -98,7 +98,7 @@ class HTTPClient(object):
                 done = not part
         return buffer.decode('utf-8')
     
-    # added function
+    # added function to modularize the send request which is commong b/w GET and POST
     def sendRequest(self, obj, port, request):
         # connect and send request
         self.connect(obj.hostname, port)
@@ -137,12 +137,14 @@ class HTTPClient(object):
         # if empty argument parameters, otherwise determine requestBody + length
         requestBody = ""
         contentLength = "0"
+        contentType = ""
         if args:
             requestBody = urllib.parse.urlencode(args, doseq=True)
             contentLength = str(len(requestBody))
+            contentType = "\r\nContent-Type: application/x-www-form-urlencoded"
 
         request = f"POST {path} HTTP/1.1\r\nHost: {obj.hostname}\r\nAccept: */*\r\n \
-                        Connection: Closed\r\nContent-Length: {contentLength}\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\n{requestBody}"
+                        Connection: Closed\r\nContent-Length: {contentLength}{contentType}\r\n\r\n{requestBody}"
     
         # send request
         return self.sendRequest(obj, port, request)
